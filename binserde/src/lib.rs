@@ -3,6 +3,9 @@
 pub mod deserialize;
 pub mod serialize;
 
+pub use deserialize::Deserialize;
+pub use serialize::Serialize;
+
 #[cfg(test)]
 mod tests {
     use crate::deserialize::Deserialize;
