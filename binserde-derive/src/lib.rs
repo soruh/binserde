@@ -13,20 +13,20 @@ pub fn serialize(input: TokenStream) -> TokenStream {
     let (ne_writes, le_writes, be_writes) = create_serialize_impls(&input);
 
     let expanded = quote! {
-        impl<W> Serialize<W> for #ident
+        impl<W> binserde::Serialize<W> for #ident
         where W: std::io::Write
         {
             fn serialize_ne(&self, writer: &mut W) -> std::io::Result<()> {
                 #ne_writes
-                Ok(())
+                std::io::Result::Ok(())
             }
             fn serialize_le(&self, writer: &mut W) -> std::io::Result<()> {
                 #le_writes
-                Ok(())
+                std::io::Result::Ok(())
             }
             fn serialize_be(&self, writer: &mut W) -> std::io::Result<()> {
                 #be_writes
-                Ok(())
+                std::io::Result::Ok(())
             }
 
 
