@@ -62,6 +62,44 @@ where
     }
 }
 
+impl<W> Serialize<W> for std::net::Ipv4Addr
+where
+    W: std::io::Write,
+{
+    #[inline]
+    fn serialize_ne(&self, writer: &mut W) -> std::io::Result<()> {
+        writer.write_all(&self.octets())
+    }
+}
+
+impl<W, T> Serialize<W> for Option<T>
+where
+    W: std::io::Write,
+    T: Serialize<W> + Default,
+{
+    fn serialize_ne(&self, writer: &mut W) -> std::io::Result<()> {
+        if let Some(value) = self.as_ref() {
+            value.serialize_ne(writer)
+        } else {
+            (<T>::default()).serialize_ne(writer)
+        }
+    }
+    fn serialize_be(&self, writer: &mut W) -> std::io::Result<()> {
+        if let Some(value) = self.as_ref() {
+            value.serialize_be(writer)
+        } else {
+            (<T>::default()).serialize_ne(writer)
+        }
+    }
+    fn serialize_le(&self, writer: &mut W) -> std::io::Result<()> {
+        if let Some(value) = self.as_ref() {
+            value.serialize_le(writer)
+        } else {
+            (<T>::default()).serialize_ne(writer)
+        }
+    }
+}
+
 impl<W, T> Serialize<W> for [T]
 where
     W: std::io::Write,

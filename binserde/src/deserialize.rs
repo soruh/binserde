@@ -70,6 +70,54 @@ where
     }
 }
 
+impl<R> Deserialize<R> for std::net::Ipv4Addr
+where
+    R: std::io::Read,
+{
+    fn deserialize_ne(reader: &mut R) -> std::io::Result<Self> {
+        let mut buffer = [0u8; 4];
+        reader.read_exact(&mut buffer)?;
+
+        Ok(buffer.into())
+    }
+}
+
+impl<R, T> Deserialize<R> for Option<T>
+where
+    R: std::io::Read,
+    T: Deserialize<R> + Default + Eq,
+{
+    #[inline]
+    fn deserialize_ne(reader: &mut R) -> std::io::Result<Option<T>> {
+        let res = <T>::deserialize_ne(reader)?;
+        Ok(if res == <T>::default() {
+            None
+        } else {
+            Some(res)
+        })
+    }
+
+    #[inline]
+    fn deserialize_le(reader: &mut R) -> std::io::Result<Option<T>> {
+        let res = <T>::deserialize_le(reader)?;
+        Ok(if res == <T>::default() {
+            None
+        } else {
+            Some(res)
+        })
+    }
+
+    #[inline]
+    fn deserialize_be(reader: &mut R) -> std::io::Result<Option<T>> {
+        let res = <T>::deserialize_be(reader)?;
+        Ok(if res == <T>::default() {
+            None
+        } else {
+            Some(res)
+        })
+    }
+}
+
 #[cfg(feature = "unstable")]
 impl<R, T, const N: usize> Deserialize<R> for [T; N]
 where
@@ -119,4 +167,3 @@ where
         Ok(unsafe { (&res as *const _ as *const [T; N]).read() })
     }
 }
-
