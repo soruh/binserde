@@ -72,6 +72,16 @@ where
     }
 }
 
+impl<W> Serialize<W> for std::net::Ipv6Addr
+where
+    W: std::io::Write,
+{
+    #[inline]
+    fn serialize_ne(&self, writer: &mut W) -> std::io::Result<()> {
+        writer.write_all(&self.octets())
+    }
+}
+
 impl<W, T> Serialize<W> for Option<T>
 where
     W: std::io::Write,

@@ -82,6 +82,18 @@ where
     }
 }
 
+impl<R> Deserialize<R> for std::net::Ipv6Addr
+where
+    R: std::io::Read,
+{
+    fn deserialize_ne(reader: &mut R) -> std::io::Result<Self> {
+        let mut buffer = [0u8; 16];
+        reader.read_exact(&mut buffer)?;
+
+        Ok(buffer.into())
+    }
+}
+
 impl<R, T> Deserialize<R> for Option<T>
 where
     R: std::io::Read,
